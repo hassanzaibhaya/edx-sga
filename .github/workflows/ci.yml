@@ -19,7 +19,7 @@ jobs:
         os: [ubuntu-24.04]
         python-version: ['3.12']
         edx_branch: ['master', 'open-release/redwood.master', 'open-release/sumac.master']
-        toxenv: [py312-django32, py312-django42]
+        toxenv: [py312-django42, py312-django52]
 
     steps:
       - uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
         run: tox
 
       - name: Upload coverage to CodeCov
-        if: matrix.python-version == '3.12' && matrix.toxenv == 'py312-django42'
+        if: matrix.python-version == '3.12' && (matrix.toxenv == 'py312-django42' || matrix.toxenv == 'py312-django52')
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
@@ -77,7 +77,7 @@ jobs:
           EDX_WORKSPACE=$PWD/.. docker compose -f /home/runner/.local/share/$DIRECTORY/env/local/docker-compose.yml -f /home/runner/.local/share/$DIRECTORY/env/dev/docker-compose.yml --project-name $DEV run -v $PWD/../edx-sga:/edx-sga lms /edx-sga/run_edx_integration_tests.sh
 
       - name: Upload coverage to CodeCov
-        if: matrix.python-version == '3.12' && matrix.toxenv == 'py312-django42'
+        if: matrix.python-version == '3.12' && (matrix.toxenv == 'py312-django42' || matrix.toxenv == 'py312-django52')
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
