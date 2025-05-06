@@ -9,7 +9,11 @@ from functools import partial
 
 import pytz
 from django.conf import settings
-from django.core.files.storage import default_storage as django_default_storage, get_storage_class
+from django.core.files.storage import default_storage as django_default_storage
+try:
+    from django.core.files.storage import get_storage_class as import_storage_class
+except ImportError:
+    from django.utils.module_loading import import_string as import_storage_class
 from edx_sga.constants import BLOCK_SIZE
 
 
@@ -28,7 +32,7 @@ def get_default_storage():
     sga_storage_settings = getattr(settings, "SGA_STORAGE_SETTINGS", None)
 
     if sga_storage_settings:
-        return get_storage_class(
+        return import_storage_class(
             sga_storage_settings['STORAGE_CLASS']
         )(**sga_storage_settings['STORAGE_KWARGS'])
 
@@ -61,7 +65,7 @@ def get_file_modified_time_utc(file_path):
         # time.tzname returns a 2 element tuple:
         #   (local non-DST timezone, e.g.: 'EST', local DST timezone, e.g.: 'EDT')
         pytz.timezone(time.tzname[0])
-        if settings.DEFAULT_FILE_STORAGE
+        if settings.STORAGES['default']
         == "django.core.files.storage.FileSystemStorage"
         else pytz.utc
     )
